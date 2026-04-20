@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Task Manager</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Task Manager</h1>
 
-<h1>Task Manager</h1>
+      <div class="input-area">
+        <input id="task" placeholder="Enter task" />
+        <button onclick="addTask()">Add</button>
+      </div>
 
-<input id="task" placeholder="Enter task">
-<button onclick="addTask()">Add</button>
+      <ul id="list"></ul>
+    </div>
 
-<ul id="list"></ul>
-
-<script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
