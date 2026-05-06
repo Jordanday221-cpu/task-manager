@@ -1,3 +1,7 @@
+if (!localStorage.getItem("token")) {
+  window.location.href = "index.html";
+}
+
 let selectedMood = null;
 let selectedMoodValue = null;
 let history = [];
