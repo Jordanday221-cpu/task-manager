@@ -1,11 +1,21 @@
 function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-  if (email === "test@gmail.com" && password === "123") {
-    localStorage.setItem("token", "temp");
-    window.location.href = "dashboard.html";
-  } else {
-    document.getElementById("error").innerText = "Invalid credentials";
-  }
+  const formData = new FormData();
+  formData.append('email', email);
+  formData.append('password', password);
+
+  fetch('api/login.php', {
+    method: 'POST',
+    body: formData
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      if (data.trim() === 'Login successful') {
+        window.location.href = 'Dashboard.html';
+      } else {
+        document.getElementById('error').innerText = data;
+      }
+    });
 }

@@ -1,111 +1,128 @@
-if (!localStorage.getItem("token")) {
-  window.location.href = "index.html";
-}
-
 let selectedMood = null;
 let selectedMoodValue = null;
-let history = [];
 
-// INIT
+// alert("script loaded");
+
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("datePicker").valueAsDate = new Date();
-
-  // teammate preloaded tasks
-  const tasks = [
-    "CSC 350: Design project proposal",
-    "CSC 350: Create database schema",
-    "CSC 350: Implement frontend interface",
-    "CSC 350: Test application functionality"
-  ];
-
-  tasks.forEach(task => addTask(task));
+  loadTasks();
+  loadHistory();
 });
 
-// TASKS
-function addTask(preloadedTask = null) {
+function addTask() {
   const input = document.getElementById("taskInput");
-  const value = preloadedTask || input.value;
+  const value = input.value;
 
   if (!value.trim()) return;
 
-  const li = document.createElement("li");
+  const formData = new FormData();
+  formData.append("task_title", value);
+  formData.append("task_description", "");
+  formData.append("due_date", document.getElementById("datePicker").value);
 
-  li.innerHTML = `
-    ${value}
-    <button class="delete-btn" onclick="this.parentElement.remove()">Delete</button>
-  `;
-
-  document.getElementById("taskList").appendChild(li);
-  input.value = "";
+  fetch("api/add_task.php", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      input.value = "";
+      loadTasks();
+    });
 }
 
-// MOOD
+function loadTasks() {
+  fetch("api/get_tasks.php")
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("taskList").innerHTML = data;
+    });
+}
+
+function updateTask(taskId) {
+  const status = document.getElementById("status_" + taskId).value;
+
+  const formData = new FormData();
+  formData.append("task_id", taskId);
+  formData.append("status", status);
+
+  fetch("api/update_task.php", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      loadTasks();
+    });
+}
+
+function deleteTask(taskId) {
+  const formData = new FormData();
+  formData.append("task_id", taskId);
+
+  fetch("api/delete_task.php", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      loadTasks();
+    });
+}
+
 function setMood(mood) {
   selectedMood = mood;
 
   const map = {
     good: { text: "😊 Good", value: 3 },
     okay: { text: "😐 Okay", value: 2 },
-    bad: { text: "😞 Bad", value: 1 }
+    bad: { text: "😞 Bad", value: 1 },
   };
 
-  document.getElementById("moodDisplay").innerText =
-    "Mood: " + map[mood].text;
+  document.getElementById("moodDisplay").innerText = "Mood: " + map[mood].text;
 
   selectedMoodValue = map[mood].value;
 }
 
-// SAVE DAY
 function saveDay() {
-  const date = document.getElementById("datePicker").value;
-  const sleep = document.getElementById("sleep").value;
-  const study = document.getElementById("study").value;
-  const spending = document.getElementById("spending").value;
+  const formData = new FormData();
 
-  const tasks = [...document.querySelectorAll("#taskList li")]
-    .map(li => li.childNodes[0].textContent.trim());
+  formData.append("tracking_date", document.getElementById("datePicker").value);
+  formData.append("hours_slept", document.getElementById("sleep").value);
+  formData.append("study_hours", document.getElementById("study").value);
+  formData.append("daily_spending", document.getElementById("spending").value);
+  formData.append("notes", "Mood: " + (selectedMood || "none"));
 
-  const entry = {
-    date,
-    sleep: Number(sleep),
-    study: Number(study),
-    spending: Number(spending),
-    mood: {
-      label: selectedMood,
-      value: selectedMoodValue
-    },
-    tasks
-  };
+  fetch("api/add_tracking.php", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("sleep").value = "";
+      document.getElementById("study").value = "";
+      document.getElementById("spending").value = "";
+      document.getElementById("moodDisplay").innerText = "Mood: —";
 
-  history.push(entry);
+      selectedMood = null;
+      selectedMoodValue = null;
 
-  renderHistory();
-
-  // reset UI
-  document.getElementById("taskList").innerHTML = "";
-  document.getElementById("sleep").value = "";
-  document.getElementById("study").value = "";
-  document.getElementById("spending").value = "";
-  document.getElementById("moodDisplay").innerText = "Mood: —";
-  selectedMood = null;
-  selectedMoodValue = null;
+      loadHistory();
+    });
 }
 
-// HISTORY
-function renderHistory() {
-  const container = document.getElementById("history");
-  container.innerHTML = "";
+function loadHistory() {
+  fetch("api/get_tracking.php")
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("history").innerHTML = data;
+    });
+}
 
-  history.forEach(h => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "10px";
-
-    div.innerHTML = `
-      <b>${h.date}</b><br/>
-      Sleep: ${h.sleep} | Study: ${h.study} | Spend: $${h.spending}<br/>
-      Mood: ${h.mood?.label || "—"}
-    `;
-
-    container.appendChild(div);
-  });
+function logout() {
+  fetch("api/logout.php")
+    .then((response) => response.text())
+    .then((data) => {
+      window.location.href = "index.html";
+    });
 }

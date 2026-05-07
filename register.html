@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="container card">
+      <h1>Register</h1>
+
+      <input id="name" placeholder="Name" />
+      <input id="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+
+      <button onclick="register()">Register</button>
+
+      <p id="result"></p>
+    </div>
+
+    <script>
+      function register() {
+        const formData = new FormData();
+
+        formData.append('name', document.getElementById('name').value);
+        formData.append('email', document.getElementById('email').value);
+        formData.append('password', document.getElementById('password').value);
+
+        fetch('api/register.php', {
+          method: 'POST',
+          body: formData
+        })
+          .then((response) => response.text())
+          .then((data) => {
+            data = data.trim();
+
+            if (data === 'Registration successful') {
+              window.location.href = 'index.html';
+            } else {
+              document.getElementById('result').innerText = data;
+            }
+          });
+      }
+    </script>
+  </body>
+</html>

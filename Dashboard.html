@@ -1,64 +1,66 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Student Tracker</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
+  <head>
+    <title>Student Tracker</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
-  <div class="container">
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Today</h1>
 
-    <div class="header">
-      <h1>Today</h1>
-      <input type="date" id="datePicker" />
-    </div>
-
-    <!-- DAILY INPUT CARD -->
-    <div class="card">
-      <h3>Daily Overview</h3>
-
-      <div class="grid">
-        <input id="sleep" type="number" placeholder="Sleep hrs" />
-        <input id="study" type="number" placeholder="Study hrs" />
-        <input id="spending" type="number" placeholder="Spend $" />
+        <div>
+          <input type="date" id="datePicker" />
+          <button onclick="logout()">Logout</button>
+        </div>
       </div>
 
-      <div class="mood-section">
-        <p>How did today feel?</p>
+      <!-- DAILY INPUT CARD -->
+      <div class="card">
+        <h3>Daily Overview</h3>
 
-        <div class="mood-buttons">
-          <button onclick="setMood('good')">😊</button>
-          <button onclick="setMood('okay')">😐</button>
-          <button onclick="setMood('bad')">😞</button>
+        <div class="grid">
+          <input id="sleep" type="number" placeholder="Sleep hrs" />
+          <input id="study" type="number" placeholder="Study hrs" />
+          <input id="spending" type="number" placeholder="Spend $" />
         </div>
 
-        <p id="moodDisplay">Mood: —</p>
+        <div class="mood-section">
+          <p>How did today feel?</p>
+
+          <div class="mood-buttons">
+            <button onclick="setMood('good')">😄</button>
+            <button onclick="setMood('okay')">😐</button>
+            <button onclick="setMood('bad')">😞</button>
+          </div>
+
+          <p id="moodDisplay">Mood: —</p>
+        </div>
+      </div>
+
+      <!-- TASKS CARD -->
+      <div class="card">
+        <h3>Tasks</h3>
+
+        <div class="input-row">
+          <input id="taskInput" placeholder="Add a task..." />
+          <button onclick="addTask()">Add</button>
+        </div>
+
+        <ul id="taskList"></ul>
+      </div>
+
+      <!-- SAVE -->
+      <button class="save-btn" onclick="saveDay()">Save Day</button>
+
+      <!-- HISTORY -->
+      <div class="card">
+        <h3>Local History (Frontend Only)</h3>
+        <div id="history"></div>
       </div>
     </div>
 
-    <!-- TASKS CARD -->
-    <div class="card">
-      <h3>Tasks</h3>
-
-      <div class="input-row">
-        <input id="taskInput" placeholder="Add a task..." />
-        <button onclick="addTask()">Add</button>
-      </div>
-
-      <ul id="taskList"></ul>
-    </div>
-
-    <!-- SAVE -->
-    <button class="save-btn" onclick="saveDay()">Save Day</button>
-
-    <!-- HISTORY -->
-    <div class="card">
-      <h3>Local History (Frontend Only)</h3>
-      <div id="history"></div>
-    </div>
-
-  </div>
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js?v=10"></script>
+  </body>
 </html>
