@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudentOS - Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-left">
+    <div>
+      <div class="auth-logo">Student<span>OS</span></div>
+      <div class="hero-headline">
+        See how <span class="cycle-word" id="wordA">sleep</span><br>
+        affects your <span class="cycle-word" id="wordB">grades</span>
+      </div>
+      <p class="hero-sub">
+        Log your daily habits and actually understand what is helping or hurting your performance.
+      </p>
+      <div class="floating-tags">
+        <span class="tag t1">Free to use</span>
+        <span class="tag t2">Your data stays private</span>
+        <span class="tag t3">Takes 30 seconds</span>
+        <span class="tag t4">No credit card</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form">
+      <div class="auth-logo" style="font-size:22px; margin-bottom:4px;">Student<span>OS</span></div>
+      <h2>Create account</h2>
+      <p class="sub">Join and start tracking today</p>
+
+      <div class="field">
+        <label>Full Name</label>
+        <input id="name" type="text" placeholder="Alex Johnson" />
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="you@school.edu" />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Create a password" />
+      </div>
+
+      <button class="btn btn-primary btn-full" style="margin-top:8px;" onclick="register()">
+        Create Account
+      </button>
+
+      <p id="result" class="error-msg"></p>
+
+      <p class="auth-divider">Already have an account? <a href="index.html">Sign in</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const pairs = [
+    { a: "sleep",    aC: "#b47aff", b: "mood",        bC: "#ff6b6b" },
+    { a: "studying", aC: "#7eb4ff", b: "your grades", bC: "#c8f55a" },
+    { a: "spending", aC: "#ffb347", b: "your stress",  bC: "#ff6b6b" },
+    { a: "mood",     aC: "#ff6b6b", b: "study time",  bC: "#7eb4ff" },
+    { a: "sleep",    aC: "#b47aff", b: "spending",    bC: "#ffb347" },
+    { a: "tasks",    aC: "#c8f55a", b: "your week",   bC: "#5dcaa5" },
+  ];
+  let idx = 0;
+  const elA = document.getElementById("wordA");
+  const elB = document.getElementById("wordB");
+  elA.style.color = pairs[0].aC;
+  elB.style.color = pairs[0].bC;
+
+  function cyclePair() {
+    elA.style.opacity = 0;
+    elB.style.opacity = 0;
+    setTimeout(() => {
+      idx = (idx + 1) % pairs.length;
+      elA.textContent = pairs[idx].a;
+      elA.style.color  = pairs[idx].aC;
+      elB.textContent = pairs[idx].b;
+      elB.style.color  = pairs[idx].bC;
+      elA.style.opacity = 1;
+      elB.style.opacity = 1;
+    }, 300);
+  }
+  setInterval(cyclePair, 2200);
+
+  function register() {
+    const resultEl = document.getElementById("result");
+    const formData = new FormData();
+    formData.append("name",     document.getElementById("name").value);
+    formData.append("email",    document.getElementById("email").value);
+    formData.append("password", document.getElementById("password").value);
+
+    fetch("api/register.php", { method: "POST", body: formData })
+      .then(r => r.text())
+      .then(data => {
+        data = data.trim();
+        if (data === "Registration successful") {
+          resultEl.style.color = "var(--accent1)";
+          resultEl.innerText = "Account created! Redirecting...";
+          setTimeout(() => window.location.href = "index.html", 1200);
+        } else {
+          resultEl.style.color = "var(--accent2)";
+          resultEl.innerText = data;
+        }
+      });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudentOS - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">Student<span>OS</span></div>
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Main</span>
+      <a class="nav-item active" onclick="showPage('dashboard', this)">
+        <span class="nav-icon">&#9679;</span>
+        <span>Dashboard</span>
+      </a>
+      <a class="nav-item" onclick="showPage('tasks', this)">
+        <span class="nav-icon">&#9632;</span>
+        <span>My Tasks</span>
+      </a>
+      <a class="nav-item" onclick="showPage('history', this)">
+        <span class="nav-icon">&#9650;</span>
+        <span>History &amp; Stats</span>
+      </a>
+      <span class="nav-section-label">Account</span>
+      <a class="nav-item" onclick="showPage('account', this)">
+        <span class="nav-icon">&#9671;</span>
+        <span>Profile</span>
+      </a>
+      <a class="nav-item" onclick="showPage('settings', this)">
+        <span class="nav-icon">&#9881;</span>
+        <span>Settings</span>
+      </a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="user-pill">
+        <div class="avatar" id="userAvatar">S</div>
+        <div class="user-info">
+          <div class="user-name" id="userName">Student</div>
+          <div class="user-role">Student</div>
+        </div>
+      </div>
+      <button class="nav-item" onclick="logout()" style="color:#ff6b6b; margin-top:4px;">
+        <span class="nav-icon">&#8594;</span>
+        <span>Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Today</div>
+          <div class="page-subtitle" id="todayDate"></div>
+        </div>
+        <input type="date" id="datePicker" style="width:auto;" />
+      </div>
+
+      <div class="card">
+        <div class="card-title">Daily Overview</div>
+        <div class="stat-grid">
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Sleep hrs</label>
+            <input id="sleep" type="number" placeholder="0" min="0" max="24" style="text-align:center;" />
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Study hrs</label>
+            <input id="study" type="number" placeholder="0" min="0" max="24" style="text-align:center;" />
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px;">Spent $</label>
+            <input id="spending" type="number" placeholder="0.00" min="0" style="text-align:center;" />
+          </div>
+        </div>
+
+        <div style="margin-top:16px;">
+          <div class="card-title" style="margin-bottom:10px;">How did today feel?</div>
+          <div class="mood-row">
+            <div>
+              <button class="mood-btn" id="moodGood" onclick="setMood('good')">:)</button>
+              <div class="mood-label">Good</div>
+            </div>
+            <div>
+              <button class="mood-btn" id="moodOkay" onclick="setMood('okay')">:|</button>
+              <div class="mood-label">Okay</div>
+            </div>
+            <div>
+              <button class="mood-btn" id="moodBad" onclick="setMood('bad')">:(</button>
+              <div class="mood-label">Rough</div>
+            </div>
+          </div>
+          <p id="moodDisplay" style="font-size:13px;color:var(--muted);margin-top:10px;">No mood selected</p>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top:20px;width:100%;" onclick="saveDay()">Save Day</button>
+        <p id="saveMsg" style="font-size:12px;color:var(--accent1);margin-top:8px;display:none;">Saved!</p>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div id="page-tasks" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">My Tasks</div>
+          <div class="page-subtitle">Stay on top of what is due</div>
+        </div>
+        <input type="date" id="taskDatePicker" style="width:auto;" />
+      </div>
+      <div class="card">
+        <div class="card-title">Add Task</div>
+        <div class="task-row">
+          <input id="taskInput" type="text" placeholder="What needs to get done?" style="flex:1;" />
+          <button class="btn btn-primary" onclick="addTask()">+ Add</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Active Tasks</div>
+        <ul class="task-list" id="taskList">
+          <li style="color:var(--muted);font-size:13px;padding:10px 0;">Loading tasks...</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="page-history" style="display:none;">
+      <div class="page-header">
+        <div>
+          <div class="page-title">History &amp; Stats</div>
+          <div class="page-subtitle">See how your week is really going</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+          <div class="card-title" style="margin:0;">Averages</div>
+          <div class="history-tabs">
+            <button class="tab-btn active" onclick="setHistoryRange('week', this)">Week</button>
+            <button class="tab-btn" onclick="setHistoryRange('month', this)">Month</button>
+          </div>
+        </div>
+        <div class="rings-grid" id="ringsGrid">
+          <div class="ring-card">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+              <circle id="sleepRing" cx="40" cy="40" r="32" fill="none" stroke="#b47aff" stroke-width="8" stroke-dasharray="0 201" stroke-linecap="round" transform="rotate(-90 40 40)" style="transition:stroke-dasharray 1s ease;"/>
+              <text x="40" y="45" text-anchor="middle" fill="#f0efe8" font-family="Syne,sans-serif" font-size="14" font-weight="700" id="sleepRingVal">-</text>
+            </svg>
+            <div class="ring-label">Avg Sleep</div>
+            <div class="ring-sub">hrs / night</div>
+          </div>
+          <div class="ring-card">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+              <circle id="studyRing" cx="40" cy="40" r="32" fill="none" stroke="#7eb4ff" stroke-width="8" stroke-dasharray="0 201" stroke-linecap="round" transform="rotate(-90 40 40)" style="transition:stroke-dasharray 1s ease;"/>
+              <text x="40" y="45" text-anchor="middle" fill="#f0efe8" font-family="Syne,sans-serif" font-size="14" font-weight="700" id="studyRingVal">-</text>
+            </svg>
+            <div class="ring-label">Avg Study</div>
+            <div class="ring-sub">hrs / day</div>
+          </div>
+          <div class="ring-card">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+              <circle id="spendRing" cx="40" cy="40" r="32" fill="none" stroke="#ffb347" stroke-width="8" stroke-dasharray="0 201" stroke-linecap="round" transform="rotate(-90 40 40)" style="transition:stroke-dasharray 1s ease;"/>
+              <text x="40" y="45" text-anchor="middle" fill="#f0efe8" font-family="Syne,sans-serif" font-size="14" font-weight="700" id="spendRingVal">-</text>
+            </svg>
+            <div class="ring-label">Avg Spend</div>
+            <div class="ring-sub">$ / day</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;">Daily Log</div>
+        <div id="historyList" class="history-list">
+          <p style="color:var(--muted);font-size:13px;">Loading history...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div id="page-account" style="display:none;">
+      <div class="page-header"><div><div class="page-title">Profile</div></div></div>
+      <div class="card">
+        <div class="account-header">
+          <div class="account-avatar" id="accountAvatar">S</div>
+          <div>
+            <div class="account-name" id="accountName">Student</div>
+            <div class="account-email" id="accountEmail">student@school.edu</div>
+          </div>
+        </div>
+        <div>
+          <div class="settings-row">
+            <span class="settings-label">Member since</span>
+            <span class="settings-value">2025</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Total days logged</span>
+            <span class="settings-value" id="totalDays">-</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Tasks completed</span>
+            <span class="settings-value" id="tasksCompleted">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="page-settings" style="display:none;">
+      <div class="page-header"><div><div class="page-title">Settings</div></div></div>
+      <div class="card">
+        <div class="card-title">Daily Goals</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Sleep goal (hrs)</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;">Used for ring progress</div>
+          </div>
+          <input type="number" id="sleepGoal" value="8" style="width:70px;text-align:center;" />
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Study goal (hrs)</div></div>
+          <input type="number" id="studyGoal" value="6" style="width:70px;text-align:center;" />
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-label">Spending budget ($)</div></div>
+          <input type="number" id="spendGoal" value="30" style="width:70px;text-align:center;" />
+        </div>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="saveGoals()">Save Goals</button>
+        <p id="goalsSaved" style="font-size:12px;color:var(--accent1);margin-top:8px;display:none;">Saved!</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Account</div>
+        <div class="settings-row">
+          <span class="settings-label">Logout of StudentOS</span>
+          <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js?v=12"></script>
+<script>
+  const pages = ['dashboard','tasks','history','account','settings'];
+
+  function showPage(name, el) {
+    pages.forEach(p => {
+      document.getElementById('page-' + p).style.display = (p === name) ? 'block' : 'none';
+    });
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    if (name === 'history') loadHistoryPage();
+    if (name === 'tasks')   { loadTasks(); document.getElementById('taskDatePicker').value = document.getElementById('datePicker').value; }
+    if (name === 'account') loadAccountPage();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const today = new Date();
+    document.getElementById('datePicker').valueAsDate = today;
+    document.getElementById('taskDatePicker').valueAsDate = today;
+    const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', opts);
+    loadGoals();
+  });
+
+  function loadGoals() {
+    document.getElementById('sleepGoal').value = localStorage.getItem('goalSleep') || 8;
+    document.getElementById('studyGoal').value = localStorage.getItem('goalStudy') || 6;
+    document.getElementById('spendGoal').value = localStorage.getItem('goalSpend') || 30;
+  }
+
+  function saveGoals() {
+    localStorage.setItem('goalSleep', document.getElementById('sleepGoal').value);
+    localStorage.setItem('goalStudy', document.getElementById('studyGoal').value);
+    localStorage.setItem('goalSpend', document.getElementById('spendGoal').value);
+    const msg = document.getElementById('goalsSaved');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  }
+
+  let historyRange = 'week';
+
+  function setHistoryRange(range, btn) {
+    historyRange = range;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadHistoryPage();
+  }
+
+  function loadHistoryPage() {
+    fetch('api/get_tracking.php')
+      .then(r => r.text())
+      .then(raw => renderHistoryUI(raw));
+  }
+
+  function parseTrackingHTML(raw) {
+    const entries = [];
+    const blocks = raw.trim().split(/\n\n+/);
+    blocks.forEach(block => {
+      const entry = {};
+      const dateM  = block.match(/Date:\s*([^\n<]+)/);
+      const sleepM = block.match(/Hours Slept:\s*([\d.]+)/);
+      const studyM = block.match(/Study Hours:\s*([\d.]+)/);
+      const spendM = block.match(/Daily Spending:\s*\$?([\d.]+)/);
+      const notesM = block.match(/Notes:\s*([^\n<]+)/);
+      if (dateM)  entry.date  = dateM[1].trim();
+      if (sleepM) entry.sleep = parseFloat(sleepM[1]);
+      if (studyM) entry.study = parseFloat(studyM[1]);
+      if (spendM) entry.spend = parseFloat(spendM[1]);
+      if (notesM) entry.notes = notesM[1].trim();
+      if (entry.date) entries.push(entry);
+    });
+    return entries;
+  }
+
+  function renderHistoryUI(raw) {
+    let entries = parseTrackingHTML(raw);
+    const now = new Date();
+    const days = historyRange === 'week' ? 7 : 30;
+    const cutoff = new Date(now);
+    cutoff.setDate(now.getDate() - days);
+    entries = entries.filter(e => new Date(e.date) >= cutoff);
+
+    const n = entries.length || 1;
+    const avgSleep = entries.reduce((s,e) => s + (e.sleep||0), 0) / n;
+    const avgStudy = entries.reduce((s,e) => s + (e.study||0), 0) / n;
+    const avgSpend = entries.reduce((s,e) => s + (e.spend||0), 0) / n;
+
+    const goalSleep = parseFloat(localStorage.getItem('goalSleep') || 8);
+    const goalStudy = parseFloat(localStorage.getItem('goalStudy') || 6);
+    const goalSpend = parseFloat(localStorage.getItem('goalSpend') || 30);
+
+    function ringDash(val, goal) {
+      const pct  = Math.min(val / goal, 1);
+      const circ = 2 * Math.PI * 32;
+      return pct * circ + ' ' + circ;
+    }
+
+    setTimeout(() => {
+      document.getElementById('sleepRing').setAttribute('stroke-dasharray', ringDash(avgSleep, goalSleep));
+      document.getElementById('studyRing').setAttribute('stroke-dasharray', ringDash(avgStudy, goalStudy));
+      document.getElementById('spendRing').setAttribute('stroke-dasharray', ringDash(avgSpend, goalSpend));
+    }, 100);
+
+    document.getElementById('sleepRingVal').textContent = avgSleep.toFixed(1);
+    document.getElementById('studyRingVal').textContent = avgStudy.toFixed(1);
+    document.getElementById('spendRingVal').textContent = '$' + Math.round(avgSpend);
+
+    const listEl = document.getElementById('historyList');
+    if (entries.length === 0) {
+      listEl.innerHTML = '<p style="color:var(--muted);font-size:13px;">No data for this period yet.</p>';
+      return;
+    }
+
+    listEl.innerHTML = entries.map(e => {
+      const notes    = e.notes || '';
+      const moodGood = notes.includes('good');
+      const moodBad  = notes.includes('bad');
+      const moodText = moodGood ? 'Good' : moodBad ? 'Rough' : 'Okay';
+      const moodColor = moodGood ? 'var(--accent1)' : moodBad ? 'var(--accent2)' : 'var(--accent4)';
+      return '<div class="history-row">' +
+        '<span class="history-date">' + e.date + '</span>' +
+        '<span class="history-val">Sleep: ' + (e.sleep || '-') + ' hrs</span>' +
+        '<span class="history-val">Study: ' + (e.study || '-') + ' hrs</span>' +
+        '<span class="history-val">$' + (e.spend || '0') + '</span>' +
+        '<span style="font-size:12px;font-weight:600;color:' + moodColor + ';">' + moodText + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function loadAccountPage() {
+    fetch('api/get_tracking.php')
+      .then(r => r.text())
+      .then(raw => {
+        const entries = parseTrackingHTML(raw);
+        document.getElementById('totalDays').textContent = entries.length + ' days';
+      });
+    fetch('api/get_tasks.php')
+      .then(r => r.text())
+      .then(raw => {
+        const completed = (raw.match(/Completed/g) || []).length;
+        document.getElementById('tasksCompleted').textContent = completed;
+      });
+  }
+
+  const _origSaveDay = window.saveDay;
+  window.saveDay = function() {
+    if (_origSaveDay) _origSaveDay();
+    const msg = document.getElementById('saveMsg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 2500);
+  };
+</script>
+</body>
+</html>

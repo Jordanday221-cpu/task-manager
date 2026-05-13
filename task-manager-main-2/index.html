@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudentOS - Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="auth-page">
+  <div class="auth-left">
+    <div>
+      <div class="auth-logo">Student<span>OS</span></div>
+      <div class="hero-headline">
+        Track your<br>
+        <span class="cycle-word" id="cycleWord">sleep</span><br>
+        every day.
+      </div>
+      <p class="hero-sub">
+        One place to log your daily habits, stay on top of tasks, and actually see how your week is going.
+      </p>
+      <div class="floating-tags">
+        <span class="tag t1">Sleep hours</span>
+        <span class="tag t2">Study time</span>
+        <span class="tag t3">Spending</span>
+        <span class="tag t4">Tasks</span>
+        <span class="tag t5">Mood</span>
+        <span class="tag">Weekly trends</span>
+        <span class="tag">Daily log</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form">
+      <div class="auth-logo" style="font-size:22px; margin-bottom:4px;">Student<span>OS</span></div>
+      <h2>Welcome back</h2>
+      <p class="sub">Log in to your dashboard</p>
+
+      <div class="field">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="you@school.edu" />
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <input id="password" type="password" placeholder="Password" />
+      </div>
+
+      <button class="btn btn-primary btn-full" style="margin-top:8px;" onclick="login()">
+        Sign In
+      </button>
+
+      <p id="error" class="error-msg"></p>
+
+      <p class="auth-divider">No account? <a href="register.html">Create one free</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="login.js"></script>
+<script>
+  const words = [
+    { text: "sleep",      color: "#b47aff" },
+    { text: "spending",   color: "#ffb347" },
+    { text: "mood",       color: "#ff6b6b" },
+    { text: "tasks",      color: "#7eb4ff" },
+    { text: "study time", color: "#c8f55a" },
+    { text: "progress",   color: "#5dcaa5" },
+  ];
+  let i = 0;
+  const el = document.getElementById("cycleWord");
+  function cycleWord() {
+    el.style.opacity = 0;
+    setTimeout(() => {
+      i = (i + 1) % words.length;
+      el.textContent = words[i].text;
+      el.style.color  = words[i].color;
+      el.style.opacity = 1;
+    }, 300);
+  }
+  setInterval(cycleWord, 2000);
+</script>
+</body>
+</html>
